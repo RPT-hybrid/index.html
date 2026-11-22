@@ -462,6 +462,120 @@
 
   footer strong { color: var(--accent); font-family: 'Impact', 'Arial Narrow', sans-serif; font-size: 15px; letter-spacing: 2px; }
 
+  /* ===== CTA RPT ===== */
+  .rpt-cta {
+    margin-top: 2rem;
+    background: linear-gradient(135deg, var(--navy) 0%, var(--navy2) 100%);
+    border-radius: 16px;
+    padding: 2.5rem 3rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 2rem;
+    flex-wrap: wrap;
+    box-shadow: 0 2px 24px rgba(15,31,56,0.15);
+    border-left: 5px solid var(--accent);
+  }
+
+  .rpt-cta-text { flex: 1; min-width: 240px; }
+
+  .rpt-cta-kicker {
+    font-family: 'Impact', 'Arial Narrow', sans-serif;
+    font-size: 13px;
+    letter-spacing: 3px;
+    color: var(--gold);
+    margin-bottom: 8px;
+  }
+
+  .rpt-cta-title {
+    font-family: 'Impact', 'Arial Narrow', sans-serif;
+    font-size: 30px;
+    letter-spacing: 1.5px;
+    color: var(--white);
+    line-height: 1.1;
+    margin-bottom: 10px;
+  }
+
+  .rpt-cta-title span { color: var(--accent2); }
+
+  .rpt-cta-desc {
+    font-size: 15px;
+    line-height: 1.5;
+    color: rgba(255,255,255,0.75);
+    max-width: 560px;
+  }
+
+  .rpt-cta-actions {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+    min-width: 240px;
+  }
+
+  .rpt-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 14px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    padding: 16px 24px;
+    border-radius: 10px;
+    transition: transform 0.15s, background 0.2s, box-shadow 0.2s;
+  }
+
+  .rpt-btn:hover { transform: translateY(-2px); }
+
+  .rpt-btn-primary {
+    background: var(--accent);
+    color: var(--white);
+    box-shadow: 0 6px 20px rgba(232,76,30,0.35);
+  }
+
+  .rpt-btn-primary:hover { background: var(--accent2); }
+
+  .rpt-socials { display: flex; gap: 10px; }
+
+  .rpt-btn-social {
+    flex: 1;
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.2);
+    color: var(--white);
+    padding: 12px 16px;
+    font-size: 12px;
+  }
+
+  .rpt-btn-social:hover { background: rgba(255,255,255,0.16); }
+
+  .rpt-btn svg { width: 18px; height: 18px; flex-shrink: 0; }
+
+  footer a { color: inherit; }
+  footer a:hover { color: var(--accent); }
+
+  .footer-socials {
+    display: flex;
+    justify-content: center;
+    gap: 18px;
+    margin-top: 12px;
+  }
+
+  .footer-socials a {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    text-decoration: none;
+    color: var(--muted);
+  }
+
+  .footer-socials a:hover { color: var(--accent); }
+  .footer-socials svg { width: 16px; height: 16px; }
+
+  [data-empty-link] { display: none !important; }
+
   /* RESPONSIVE */
   @media (max-width: 768px) {
     .header-inner { padding: 0 1rem; }
@@ -473,6 +587,9 @@
     .time-sep { font-size: 22px; }
     .pass-table tbody td { padding: 10px 12px; }
     .bar-col { display: none; }
+    .rpt-cta { padding: 1.75rem 1.5rem; }
+    .rpt-cta-title { font-size: 24px; }
+    .rpt-cta-actions { width: 100%; min-width: 0; }
   }
 </style>
 </head>
@@ -564,13 +681,73 @@
 
   </div>
 
+  <!-- ====== APPEL À L'ACTION RPT (visible sur les 2 onglets) ====== -->
+  <section class="rpt-cta" aria-label="Coaching marathon RPT Hybrid">
+    <div class="rpt-cta-text">
+      <div class="rpt-cta-kicker">COACHING MARATHON</div>
+      <div class="rpt-cta-title">Prépare ton marathon<br>avec <span>RPT</span></div>
+      <p class="rpt-cta-desc" id="cta-desc">
+        Connaître tes temps de passage, c'est bien. Les tenir le jour J, c'est mieux.
+        Plan de course à pied sur mesure + renforcement adapté, construit par des coachs
+        passés par l'athlétisme et l'entraînement hybride.
+      </p>
+    </div>
+    <div class="rpt-cta-actions">
+      <a class="rpt-btn rpt-btn-primary" data-link="contact" href="https://rpt-hybrid.com" target="_blank" rel="noopener">
+        Je veux être coaché
+      </a>
+      <div class="rpt-socials">
+        <a class="rpt-btn rpt-btn-social" data-link="instagram" href="#" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor"/></svg> Instagram</a>
+        <a class="rpt-btn rpt-btn-social" data-link="tiktok" href="#" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M16.6 5.82A4.28 4.28 0 0 1 15.54 3h-3.09v12.4a2.59 2.59 0 1 1-2.59-2.6c.27 0 .53.04.77.12V9.77a5.7 5.7 0 0 0-.77-.05A5.68 5.68 0 1 0 15.54 15.4V9.01a7.35 7.35 0 0 0 4.3 1.38V7.3a4.3 4.3 0 0 1-3.24-1.48z"/></svg> TikTok</a>
+      </div>
+    </div>
+  </section>
+
 </main>
 
 <footer>
-  Outil développé par <strong>RPT.HYBRID</strong> — rpt-hybrid.com
+  Outil développé par <strong>RPT.HYBRID</strong> — <a data-link="site" href="https://rpt-hybrid.com" target="_blank" rel="noopener">rpt-hybrid.com</a>
+  <div class="footer-socials">
+    <a data-link="instagram" href="#" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor"/></svg> Instagram</a>
+    <a data-link="tiktok" href="#" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M16.6 5.82A4.28 4.28 0 0 1 15.54 3h-3.09v12.4a2.59 2.59 0 1 1-2.59-2.6c.27 0 .53.04.77.12V9.77a5.7 5.7 0 0 0-.77-.05A5.68 5.68 0 1 0 15.54 15.4V9.01a7.35 7.35 0 0 0 4.3 1.38V7.3a4.3 4.3 0 0 1-3.24-1.48z"/></svg> TikTok</a>
+  </div>
 </footer>
 
 <script>
+// =====================================================================
+// LIENS RPT : À REMPLIR PAR JJ
+// Colle ici les vraies adresses. Un lien laissé vide ('') est masqué
+// automatiquement sur la page, donc rien de cassé en attendant.
+// =====================================================================
+const RPT_LINKS = {
+  site:      'https://rpt-hybrid.com',
+  contact:   'https://rpt-hybrid.com',  // TODO JJ : page contact, formulaire, Calendly, ou lien DM Instagram (ex. https://ig.me/m/ton_compte)
+  instagram: '',                         // TODO JJ : ex. https://www.instagram.com/ton_compte
+  tiktok:    '',                         // TODO JJ : ex. https://www.tiktok.com/@ton_compte
+};
+
+function applyRptLinks() {
+  document.querySelectorAll('[data-link]').forEach(a => {
+    const url = RPT_LINKS[a.dataset.link];
+    if (url) { a.href = url; a.removeAttribute('data-empty-link'); }
+    else { a.setAttribute('data-empty-link', ''); }
+  });
+  // Masque le bloc réseaux du CTA si aucun réseau n'est renseigné
+  document.querySelectorAll('.rpt-socials, .footer-socials').forEach(box => {
+    const visible = [...box.querySelectorAll('[data-link]')].some(a => !a.hasAttribute('data-empty-link'));
+    box.style.display = visible ? '' : 'none';
+  });
+}
+
+function updateCtaText(targetSec) {
+  const el = document.getElementById('cta-desc');
+  if (!el) return;
+  const h = Math.floor(targetSec / 3600);
+  const m = Math.floor((targetSec % 3600) / 60);
+  el.textContent = `Tu vises ${h}h${String(m).padStart(2,'0')} ? Connaître tes temps de passage, c'est bien. ` +
+    `Les tenir le jour J, c'est mieux. Plan de course à pied sur mesure + renforcement adapté, ` +
+    `construit par des coachs passés par l'athlétisme et l'entraînement hybride.`;
+}
 const MARATHON = 42.195;
 const KM_POINTS = [5, 10, 15, 20, 25, 30, 35, 40, 42.195];
 
@@ -615,6 +792,7 @@ function renderCalc() {
   const pm = Math.floor(pacePerKm / 60);
   const ps = Math.floor(pacePerKm % 60);
   document.getElementById('pace-display').textContent = `${pm}'${String(ps).padStart(2,'0')}"/km`;
+  updateCtaText(target);
 
   const tbody = document.getElementById('calc-tbody');
   tbody.innerHTML = '';
@@ -738,6 +916,7 @@ function switchTab(tab) {
 }
 
 // INIT
+applyRptLinks();
 renderCalc();
 populateSelects();
 renderGrid();
