@@ -4,6 +4,32 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Temps de passage Marathon — RPT Hybrid</title>
+<meta name="description" content="Calcule gratuitement tes temps de passage marathon : allure cible et passages tous les 5 km pour ton objectif (3h, 3h30, 4h…). Télécharge ton plan de course en story. Par RPT.HYBRID, coaching course à pied et hybride.">
+<meta name="theme-color" content="#0f1f38">
+<link rel="canonical" href="https://rpt-hybrid.github.io/index.html/">
+
+<!-- Aperçu réseaux sociaux (Open Graph : Facebook, Instagram, WhatsApp, LinkedIn…) -->
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="RPT.HYBRID">
+<meta property="og:locale" content="fr_FR">
+<meta property="og:title" content="Calculateur de temps de passage Marathon — RPT.HYBRID">
+<meta property="og:description" content="Ton objectif, ton allure, tes passages tous les 5 km. Télécharge ton plan de course en story.">
+<meta property="og:url" content="https://rpt-hybrid.github.io/index.html/">
+<meta property="og:image" content="https://rpt-hybrid.github.io/index.html/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Calculateur de temps de passage marathon RPT.HYBRID">
+
+<!-- Aperçu X / Twitter -->
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Calculateur de temps de passage Marathon — RPT.HYBRID">
+<meta name="twitter:description" content="Ton objectif, ton allure, tes passages tous les 5 km. Télécharge ton plan de course en story.">
+<meta name="twitter:image" content="https://rpt-hybrid.github.io/index.html/og-image.png">
+
+<!-- Favicon -->
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
 
 <style>
   :root {
@@ -213,6 +239,67 @@
     text-transform: uppercase;
     margin-top: 2px;
   }
+
+  /* ACTIONS (partage / story) */
+  .share-bar {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin: -0.75rem 0 2rem;
+  }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    border: none;
+    border-radius: 12px;
+    padding: 14px 22px;
+    font-family: 'Impact', 'Arial Narrow', sans-serif;
+    font-size: 16px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: transform 0.15s, background 0.2s, box-shadow 0.2s;
+  }
+
+  .btn:active { transform: scale(0.98); }
+  .btn svg { width: 20px; height: 20px; flex-shrink: 0; }
+
+  .btn-primary {
+    background: var(--accent);
+    color: var(--white);
+    box-shadow: 0 6px 20px rgba(232,76,30,0.3);
+  }
+  .btn-primary:hover { background: var(--accent2); }
+
+  .btn-ghost {
+    background: var(--white);
+    color: var(--navy);
+    border: 1.5px solid var(--border);
+  }
+  .btn-ghost:hover { border-color: var(--blue-light); }
+
+  .btn:disabled { opacity: 0.6; cursor: wait; }
+
+  .toast {
+    position: fixed;
+    left: 50%;
+    bottom: 24px;
+    transform: translate(-50%, 20px);
+    background: var(--navy);
+    color: var(--white);
+    padding: 12px 20px;
+    border-radius: 10px;
+    font-size: 14px;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.3);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.25s, transform 0.25s;
+    z-index: 200;
+  }
+  .toast.show { opacity: 1; transform: translate(-50%, 0); }
 
   /* TABLE CALCULATEUR */
   .pass-table {
@@ -473,6 +560,8 @@
     .time-sep { font-size: 22px; }
     .pass-table tbody td { padding: 10px 12px; }
     .bar-col { display: none; }
+    .share-bar { margin-top: -0.5rem; }
+    .share-bar .btn { flex: 1 1 100%; font-size: 15px; letter-spacing: 1px; }
   }
 </style>
 </head>
@@ -528,6 +617,17 @@
       </div>
     </div>
 
+    <div class="share-bar">
+      <button class="btn btn-primary" id="btn-story" type="button">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M5 21h14"/></svg>
+        Télécharger mon plan de course
+      </button>
+      <button class="btn btn-ghost" id="btn-link" type="button">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 13a5 5 0 0 0 7.07 0l3-3a5 5 0 0 0-7.07-7.07l-1 1"/><path d="M14 11a5 5 0 0 0-7.07 0l-3 3a5 5 0 0 0 7.07 7.07l1-1"/></svg>
+        Copier le lien
+      </button>
+    </div>
+
     <div class="pass-table">
       <table>
         <thead>
@@ -569,6 +669,8 @@
 <footer>
   Outil développé par <strong>RPT.HYBRID</strong> — rpt-hybrid.com
 </footer>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
 
 <script>
 const MARATHON = 42.195;
@@ -615,6 +717,8 @@ function renderCalc() {
   const pm = Math.floor(pacePerKm / 60);
   const ps = Math.floor(pacePerKm % 60);
   document.getElementById('pace-display').textContent = `${pm}'${String(ps).padStart(2,'0')}"/km`;
+
+  syncUrl(target);
 
   const tbody = document.getElementById('calc-tbody');
   tbody.innerHTML = '';
@@ -737,7 +841,269 @@ function switchTab(tab) {
   event.target.classList.add('active');
 }
 
+// ===== LIEN PARTAGEABLE (?objectif=3h30) =====
+// Formats acceptés : 3h30, 3h30m15, 3h30:15, 3:30, 3:30:15, 3h
+function parseObjective(str) {
+  if (!str) return null;
+  const v = String(str).trim().toLowerCase().replace(/\s+/g, '');
+  const m = v.match(/^(\d{1,2})(?:[h:](\d{1,2})?(?:[m:'](\d{1,2})s?)?)?$/);
+  if (!m) return null;
+  const h = parseInt(m[1], 10), mi = parseInt(m[2] || '0', 10), se = parseInt(m[3] || '0', 10);
+  if (h < 1 || h > 9 || mi > 59 || se > 59) return null;
+  return { h, m: mi, s: se };
+}
+
+function objectiveSlug(sec) {
+  const h = Math.floor(sec / 3600), m = Math.floor((sec % 3600) / 60), s = Math.round(sec % 60);
+  return `${h}h${String(m).padStart(2,'0')}` + (s ? `m${String(s).padStart(2,'0')}` : '');
+}
+
+function objectiveLabel(sec) {
+  const h = Math.floor(sec / 3600), m = Math.floor((sec % 3600) / 60), s = Math.round(sec % 60);
+  return `${h}h${String(m).padStart(2,'0')}` + (s ? `'${String(s).padStart(2,'0')}` : '');
+}
+
+function applyUrlObjective() {
+  const obj = parseObjective(new URLSearchParams(location.search).get('objectif'));
+  if (!obj) return;
+  document.getElementById('inp-h').value = obj.h;
+  document.getElementById('inp-m').value = obj.m;
+  document.getElementById('inp-s').value = obj.s;
+}
+
+function shareUrl(sec) {
+  const url = new URL(location.href);
+  url.hash = '';
+  url.searchParams.set('objectif', objectiveSlug(sec));
+  return url.toString();
+}
+
+function syncUrl(sec) {
+  try { history.replaceState(null, '', shareUrl(sec)); } catch (e) { /* file:// ou iframe */ }
+  document.title = `Objectif ${objectiveLabel(sec)} — Temps de passage Marathon — RPT Hybrid`;
+}
+
+let toastTimer;
+function toast(msg) {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => el.classList.remove('show'), 2600);
+}
+
+document.getElementById('btn-link').addEventListener('click', async () => {
+  const target = getTargetSec();
+  if (target < 1800) return toast('Indique d\'abord un temps objectif');
+  const url = shareUrl(target);
+  const isTouch = matchMedia('(pointer: coarse)').matches;
+  if (isTouch && navigator.share) {
+    try {
+      await navigator.share({ title: `Mon plan marathon : objectif ${objectiveLabel(target)}`, url });
+      return;
+    } catch (e) { if (e.name === 'AbortError') return; }
+  }
+  try {
+    await navigator.clipboard.writeText(url);
+    toast('Lien copié ! Colle-le en story, en bio ou en message.');
+  } catch (e) {
+    window.prompt('Copie ce lien :', url);
+  }
+});
+
+// ===== STORY 9:16 « MON PLAN DE COURSE » =====
+// Adresse affichée en bas de la story (à adapter si le site change de domaine)
+const SITE_LABEL = 'rpt-hybrid.com';
+const STORY_W = 1080, STORY_H = 1920;
+const F_DISPLAY = "Impact, 'Haettenschweiler', 'Arial Narrow Bold', 'Arial Black', sans-serif";
+const F_MONO = "'Courier New', Courier, monospace";
+const F_SANS = "-apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif";
+
+function roundRect(ctx, x, y, w, h, r) {
+  ctx.beginPath();
+  ctx.moveTo(x + r, y);
+  ctx.arcTo(x + w, y, x + w, y + h, r);
+  ctx.arcTo(x + w, y + h, x, y + h, r);
+  ctx.arcTo(x, y + h, x, y, r);
+  ctx.arcTo(x, y, x + w, y, r);
+  ctx.closePath();
+}
+
+function spaced(ctx, text, x, y, spacing, align) {
+  // Texte avec interlettrage (canvas letterSpacing n'est pas partout)
+  const chars = [...text];
+  const widths = chars.map(c => ctx.measureText(c).width);
+  const total = widths.reduce((a, b) => a + b, 0) + spacing * (chars.length - 1);
+  let cx = align === 'center' ? x - total / 2 : align === 'right' ? x - total : x;
+  const prev = ctx.textAlign;
+  ctx.textAlign = 'left';
+  chars.forEach((c, i) => { ctx.fillText(c, cx, y); cx += widths[i] + spacing; });
+  ctx.textAlign = prev;
+  return total;
+}
+
+function drawStory(target) {
+  const c = document.createElement('canvas');
+  c.width = STORY_W; c.height = STORY_H;
+  const ctx = c.getContext('2d');
+  const cx = STORY_W / 2;
+  const pace = target / MARATHON;
+
+  // Fond
+  const bg = ctx.createLinearGradient(0, 0, 0, STORY_H);
+  bg.addColorStop(0, '#0f1f38');
+  bg.addColorStop(1, '#081426');
+  ctx.fillStyle = bg;
+  ctx.fillRect(0, 0, STORY_W, STORY_H);
+
+  // Halo orange en haut à droite
+  const glow = ctx.createRadialGradient(STORY_W, 0, 0, STORY_W, 0, 900);
+  glow.addColorStop(0, 'rgba(232,76,30,0.35)');
+  glow.addColorStop(1, 'rgba(232,76,30,0)');
+  ctx.fillStyle = glow;
+  ctx.fillRect(0, 0, STORY_W, STORY_H);
+
+  // Bande diagonale discrète
+  ctx.save();
+  ctx.globalAlpha = 0.05;
+  ctx.fillStyle = '#3b82d4';
+  ctx.translate(cx, 520);
+  ctx.rotate(-0.2);
+  ctx.fillRect(-900, -90, 1800, 180);
+  ctx.restore();
+
+  ctx.textBaseline = 'alphabetic';
+
+  // Logo
+  ctx.font = `64px ${F_DISPLAY}`;
+  const logo = [...'RPT.HYBRID'];
+  const lw = logo.map(ch => ctx.measureText(ch).width);
+  let lx = cx - (lw.reduce((a, b) => a + b, 0) + 6 * (logo.length - 1)) / 2;
+  ctx.textAlign = 'left';
+  logo.forEach((ch, i) => {
+    ctx.fillStyle = ch === '.' ? '#e84c1e' : '#ffffff';
+    ctx.fillText(ch, lx, 230);
+    lx += lw[i] + 6;
+  });
+
+  // Libellé
+  ctx.fillStyle = '#8a9ab5';
+  ctx.font = `38px ${F_DISPLAY}`;
+  spaced(ctx, 'MON PLAN DE COURSE', cx, 330, 8, 'center');
+
+  // Objectif géant
+  ctx.fillStyle = '#ff6b3d';
+  const big = objectiveLabel(target).toUpperCase();
+  let size = 250;
+  ctx.font = `${size}px ${F_DISPLAY}`;
+  while (ctx.measureText(big).width > 900 && size > 120) { size -= 10; ctx.font = `${size}px ${F_DISPLAY}`; }
+  ctx.textAlign = 'center';
+  ctx.fillText(big, cx, 570);
+
+  ctx.fillStyle = '#ffffff';
+  ctx.font = `46px ${F_DISPLAY}`;
+  spaced(ctx, 'MARATHON · 42,195 KM', cx, 650, 5, 'center');
+
+  // Pastille allure
+  const pillW = 520, pillH = 96, pillX = cx - pillW / 2, pillY = 700;
+  roundRect(ctx, pillX, pillY, pillW, pillH, 22);
+  ctx.fillStyle = 'rgba(232,76,30,0.14)';
+  ctx.fill();
+  ctx.lineWidth = 3;
+  ctx.strokeStyle = '#e84c1e';
+  ctx.stroke();
+  ctx.fillStyle = '#ff6b3d';
+  ctx.font = `56px ${F_DISPLAY}`;
+  ctx.textAlign = 'right';
+  ctx.fillText(`${fmtPace(pace)}/km`, cx + 70, pillY + 68);
+  ctx.fillStyle = '#8a9ab5';
+  ctx.font = `600 24px ${F_SANS}`;
+  ctx.textAlign = 'left';
+  spaced(ctx, 'ALLURE', cx + 96, pillY + 44, 3, 'left');
+  spaced(ctx, 'CIBLE', cx + 96, pillY + 74, 3, 'left');
+
+  // Tableau des passages
+  const tX = 90, tW = STORY_W - 180, rowH = 84, tY = 860;
+  ctx.fillStyle = '#8a9ab5';
+  ctx.font = `26px ${F_DISPLAY}`;
+  spaced(ctx, 'POINT KM', tX + 28, tY - 18, 4, 'left');
+  spaced(ctx, 'PASSAGE', tX + tW - 28, tY - 18, 4, 'right');
+
+  KM_POINTS.forEach((km, i) => {
+    const y = tY + i * rowH;
+    const isFinish = km === MARATHON;
+    roundRect(ctx, tX, y + 6, tW, rowH - 12, 16);
+    ctx.fillStyle = isFinish ? '#e84c1e' : (i % 2 ? 'rgba(255,255,255,0.04)' : 'rgba(255,255,255,0.08)');
+    ctx.fill();
+
+    // Barre de progression sous la ligne
+    if (!isFinish) {
+      ctx.fillStyle = 'rgba(59,130,212,0.55)';
+      ctx.fillRect(tX + 28, y + rowH - 14, (tW - 56) * (km / MARATHON), 3);
+    }
+
+    ctx.fillStyle = '#ffffff';
+    ctx.font = `44px ${F_DISPLAY}`;
+    ctx.textAlign = 'left';
+    ctx.fillText(isFinish ? 'ARRIVÉE' : `${km} KM`, tX + 28, y + 57);
+
+    ctx.font = `bold 46px ${F_MONO}`;
+    ctx.textAlign = 'right';
+    ctx.fillStyle = isFinish ? '#ffffff' : '#f4f6fa';
+    ctx.fillText(fmtTime(target * (km / MARATHON)), tX + tW - 28, y + 58);
+  });
+
+  // Pied de story
+  const fy = tY + KM_POINTS.length * rowH + 70;
+  ctx.textAlign = 'center';
+  ctx.fillStyle = '#ffffff';
+  ctx.font = `600 34px ${F_SANS}`;
+  ctx.fillText('Calcule ton plan de course sur', cx, fy);
+  ctx.fillStyle = '#f5a623';
+  ctx.font = `40px ${F_DISPLAY}`;
+  spaced(ctx, SITE_LABEL.toUpperCase(), cx, fy + 58, 3, 'center');
+  ctx.fillStyle = '#8a9ab5';
+  ctx.font = `26px ${F_SANS}`;
+  ctx.fillText('Coaching course à pied · musculation · hybride', cx, fy + 106);
+
+  return c;
+}
+
+document.getElementById('btn-story').addEventListener('click', async (ev) => {
+  const btn = ev.currentTarget;
+  const target = getTargetSec();
+  if (target < 1800) return toast('Indique d\'abord un temps objectif');
+  btn.disabled = true;
+  try {
+    if (document.fonts && document.fonts.ready) await document.fonts.ready;
+    const canvas = drawStory(target);
+    const blob = await new Promise(r => canvas.toBlob(r, 'image/png'));
+    const name = `plan-marathon-${objectiveSlug(target)}-rpt-hybrid.png`;
+    const file = new File([blob], name, { type: 'image/png' });
+
+    // Sur mobile : feuille de partage (Instagram, Photos…). Sinon : téléchargement.
+    const isTouch = matchMedia('(pointer: coarse)').matches;
+    if (isTouch && navigator.canShare && navigator.canShare({ files: [file] })) {
+      try {
+        await navigator.share({ files: [file], title: 'Mon plan de course marathon' });
+        return;
+      } catch (e) { if (e.name === 'AbortError') return; }
+    }
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = name;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(() => URL.revokeObjectURL(a.href), 4000);
+    toast('Story téléchargée ! Publie-la et identifie-nous 🔥');
+  } finally {
+    btn.disabled = false;
+  }
+});
+
 // INIT
+applyUrlObjective();
 renderCalc();
 populateSelects();
 renderGrid();
